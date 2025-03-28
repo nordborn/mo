@@ -1,4 +1,4 @@
-module mo
+module github.com/nordborn/mo
 
 go 1.18
 
