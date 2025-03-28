@@ -22,3 +22,4 @@ If file not found, this code will fail `openFile()` it returns `Result{value:0, 
 The overhead is x2 (400ns to 200ns on my machine) comparing to simple err wrapping (see benches), mostly due to `defer`, so, if failures are not offten cases (let say not in highload loops) as they should be, it's fine imo.
 
 As for `Option`, bacause it's not an error and can be common case in execution branch, i'd suggest better check `isSome()` before `Try` and continue, in this case no overhead because no `Catch` occur.
+
