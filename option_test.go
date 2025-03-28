@@ -3,9 +3,9 @@ package mo_test
 import (
 	"encoding/json"
 	"fmt"
-	"mo"
 	"testing"
 
+	"github.com/nordborn/mo"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -3,9 +3,9 @@ package mo_test
 import (
 	"errors"
 	"fmt"
-	"mo"
 	"testing"
 
+	"github.com/nordborn/mo"
 	"github.com/stretchr/testify/assert"
 )
 

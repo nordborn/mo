@@ -2,9 +2,9 @@ package mo_test
 
 import (
 	"errors"
-	"mo"
 	"testing"
 
+	"github.com/nordborn/mo"
 	"github.com/stretchr/testify/assert"
 )
 
