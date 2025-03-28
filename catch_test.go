@@ -16,7 +16,7 @@ func TestCatch(t *testing.T) {
 }
 
 func divideResultCatched(a, b int) (ret mo.Result[int]) {
-	defer mo.Catch("divideResultCatched", &ret)
+	defer mo.Catch(&ret, "divideResultCatched")
 	ret = mo.Ok(a / b)
 	return
 }
@@ -28,7 +28,7 @@ func TestCatchTry(t *testing.T) {
 }
 
 func process() (ret mo.Result[int]) {
-	defer mo.Catch("process", &ret)
+	defer mo.Catch(&ret, "process")
 
 	file := mo.ResultFrom(openFile()).Try("open file")
 	data := readFile(file).Try()
@@ -57,7 +57,7 @@ func TestCatchErr(t *testing.T) {
 }
 
 func processErr() (ret mo.Result[int]) {
-	defer mo.Catch("processErr", &ret)
+	defer mo.Catch(&ret, "processErr")
 	mo.TryErr(retErr())
 	return
 }
@@ -86,7 +86,7 @@ func BenchmarkErr(b *testing.B) {
 func BenchmarkCatch(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		func() (ret mo.Result[int]) {
-			defer mo.Catch("some func", &ret)
+			defer mo.Catch(&ret, "some func")
 			panic(i)
 		}()
 	}

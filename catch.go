@@ -25,7 +25,7 @@ import "fmt"
 //	     	...
 //			return
 //		 }
-func Catch[T any](on string, ret *Result[T]) {
+func Catch[T any](ret *Result[T], on string) {
 	if r := recover(); r != nil {
 		if err, ok := r.(error); ok {
 			*ret = Err[T](err).On(on)
