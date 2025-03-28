@@ -6,7 +6,7 @@ See tests for examples
 
     func processFile() (ret mo.Result[int]) {
         // catch and add context
-        defer mo.Catch("processFile", &ret)
+        defer mo.Catch(&ret, "processFile")
 
         // convert val, err to Result and Try
         file := mo.ResultFrom(openFile()).Try("open file")
