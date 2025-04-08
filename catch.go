@@ -1,6 +1,10 @@
 package mo
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/nordborn/go-errow"
+)
 
 // Catch recovers Try panics and converts them to Err,
 // as well as any runtime panics.
@@ -25,12 +29,13 @@ import "fmt"
 //	     	...
 //			return
 //		 }
-func Catch[T any](ret *Result[T], on string) {
+func Catch[T any](ret *Result[T], on ...any) {
 	if r := recover(); r != nil {
 		if err, ok := r.(error); ok {
-			*ret = Err[T](err).On(on)
+			// WrapSkip(6, err) points to the place where the panic occured
+			*ret = Err[T](errow.WrapSkip(6, err)).On(on...)
 			return
 		}
-		*ret = Err[T](fmt.Errorf("catched panic: %v", r)).On(on)
+		*ret = Err[T](fmt.Errorf("catched panic: %v", r)).On(on...)
 	}
 }

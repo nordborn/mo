@@ -44,9 +44,9 @@ func (r Result[T]) Err() error {
 }
 
 // On adds more info (error context) to the Err as a text prefix
-func (r Result[T]) On(msg ...any) Result[T] {
-	if r.err != nil {
-		r.err = fmt.Errorf("%s: %w", fmt.Sprint(msg...), r.err)
+func (r Result[T]) On(on ...any) Result[T] {
+	if r.err != nil && on != nil {
+		r.err = fmt.Errorf("%s: %w", fmt.Sprint(on...), r.err)
 	}
 	return r
 }

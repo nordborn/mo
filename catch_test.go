@@ -16,19 +16,19 @@ func TestCatch(t *testing.T) {
 }
 
 func divideResultCatched(a, b int) (ret mo.Result[int]) {
-	defer mo.Catch(&ret, "divideResultCatched")
+	defer mo.Catch(&ret, "divideResultCatched ", a, b)
 	ret = mo.Ok(a / b)
 	return
 }
 
 func TestCatchTry(t *testing.T) {
 	res := process()
-	fmt.Printf("%+v\n", res)
+	fmt.Println(res)
 	assert.Equal(t, false, res.IsOk())
 }
 
 func process() (ret mo.Result[int]) {
-	defer mo.Catch(&ret, "process")
+	defer mo.Catch(&ret)
 
 	file := mo.ResultFrom(openFile()).Try("open file")
 	data := readFile(file).Try()
@@ -53,6 +53,7 @@ type File struct{}
 
 func TestCatchErr(t *testing.T) {
 	ret := processErr()
+	fmt.Println(ret)
 	assert.Equal(t, false, ret.IsOk())
 }
 
