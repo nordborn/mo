@@ -44,21 +44,21 @@ func (r Result[T]) Err() error {
 }
 
 // On adds more info (error context) to the Err as a text prefix
-func (r Result[T]) On(msg string) Result[T] {
+func (r Result[T]) On(msg ...any) Result[T] {
 	if r.err != nil {
-		r.err = fmt.Errorf("%s: %w", msg, r.err)
+		r.err = fmt.Errorf("%s: %w", fmt.Sprint(msg...), r.err)
 	}
 	return r
 }
 
 // Try returns T if Ok or panics if Err (can be intercepted by `Catch`),
 // variadic `on` adds extra error context as a text prefix
-func (r Result[T]) Try(on ...string) T {
+func (r Result[T]) Try(on ...any) T {
 	if r.err != nil {
 		if on == nil {
 			panic(fmt.Errorf("try err: %w", r.err))
 		} else {
-			panic(fmt.Errorf("%s: try err: %w", on[0], r.err))
+			panic(fmt.Errorf("%s: try err: %w", fmt.Sprint(on...), r.err))
 		}
 	}
 	return r.val

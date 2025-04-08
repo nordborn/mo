@@ -3,6 +3,7 @@ package mo
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 // Option type implementation with JSON marchalling/unmarshalling support
@@ -35,9 +36,14 @@ func (o Option[T]) IsSome() bool {
 }
 
 // Try unwraps or panics (can be intercepted by `Catch`)
-func (o Option[T]) Try() T {
+func (o Option[T]) Try(on ...any) T {
 	if !o.isSome {
-		panic(errors.New("try none"))
+		if on == nil {
+			panic(errors.New("try none"))
+		} else {
+			panic(fmt.Errorf("%s: try none", fmt.Sprint(on...)))
+		}
+
 	}
 	return o.val
 }
