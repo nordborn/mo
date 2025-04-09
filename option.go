@@ -17,7 +17,7 @@ func Some[T any](v T) Option[T] {
 	return Option[T]{val: v, isSome: true}
 }
 
-// None is a constructor of none Option (nil data)
+// None is a constructor of none Option ('empty' data, isSome = false)
 func None[T any]() Option[T] {
 	return Option[T]{}
 }
@@ -30,8 +30,21 @@ func OptionFrom[T any](v T, ok bool) Option[T] {
 	return Some(v)
 }
 
+// WithSome builds a new Some[T] from the exsiting Option var to do one-row return
+func (o Option[T]) WithSome(v T) Option[T] {
+	o.val = v
+	o.isSome = true
+	return o
+}
+
+// WithNone builds a new None[T] from the exsiting Option var to use type inference and one-row return
+func (o Option[T]) WithNone(v T) Option[T] {
+	o.isSome = false
+	return o
+}
+
 // IsSome checks is some (true) or none (false)
-func (o Option[T]) IsSome() bool {
+func (o *Option[T]) IsSome() bool {
 	return o.isSome
 }
 

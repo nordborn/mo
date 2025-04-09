@@ -33,13 +33,29 @@ func ResultFrom[T any](v T, err error) Result[T] {
 	return Ok(v)
 }
 
+// WithOk builds a new Ok[T] from the exsiting Result var to do one-row return
+func (r Result[T]) WithOk(v T) Result[T] {
+	r.err = nil
+	r.val = v
+	return r
+}
+
+// WithErr builds a new Err[T] from the exsiting Result var and returns it to use type inference and one-raw return
+func (r Result[T]) WithErr(e error) Result[T] {
+	if e == nil {
+		panic(errors.New("error must be not nil"))
+	}
+	r.err = e
+	return r
+}
+
 // IsOk: true is Ok, false if Err
-func (r Result[T]) IsOk() bool {
+func (r *Result[T]) IsOk() bool {
 	return r.err == nil
 }
 
 // Err is error getter
-func (r Result[T]) Err() error {
+func (r *Result[T]) Err() error {
 	return r.err
 }
 
