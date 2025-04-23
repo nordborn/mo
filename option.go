@@ -38,7 +38,7 @@ func (o Option[T]) WithSome(v T) Option[T] {
 }
 
 // WithNone builds a new None[T] from the exsiting Option var to use type inference and one-row return
-func (o Option[T]) WithNone(v T) Option[T] {
+func (o Option[T]) WithNone() Option[T] {
 	o.isSome = false
 	return o
 }
