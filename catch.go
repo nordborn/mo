@@ -2,6 +2,8 @@ package mo
 
 import (
 	"fmt"
+	"runtime"
+	"strings"
 
 	"github.com/nordborn/go-errow"
 )
@@ -21,21 +23,30 @@ import (
 //
 // Example:
 //
-//		 func someFunc(...) (ret Result[int]) {
-//		 	errorContext := "someFunc"
-//			defer mo.Catch(errorContext, &ret)
+//		 // on catch will return Err with "module.someFunc(arg1, arg2): <file/path.go:33>: runtime error: integer divide by zero"
+//		 func someFunc(arg1, arg2) (ret Result[int]) {
+//			defer mo.Catch(&ret, arg1, arg2)
 //		 	...
 //		    1 / 0
 //	     	...
-//			return
+//			return ret
 //		 }
 func Catch[T any](ret *Result[T], on ...any) {
 	if r := recover(); r != nil {
 		if err, ok := r.(error); ok {
 			// WrapSkip(6, err) points to the place where the panic occured
-			*ret = Err[T](errow.WrapSkip(6, err)).On(on...)
+			*ret = Err[T](errow.WrapSkip(6, err)).On(getOuterFuncName(), "(", fmt.Sprint(on...), ")")
 			return
 		}
-		*ret = Err[T](fmt.Errorf("catched panic: %v", r)).On(on...)
+		*ret = Err[T](fmt.Errorf("catched panic: %v", r)).On(getOuterFuncName(), "(", fmt.Sprint(on...), ")")
 	}
+}
+
+// getOuterFuncName returns module.(receiver).func where Catch was deferred
+func getOuterFuncName() string {
+	pc, _, _, _ := runtime.Caller(4)
+	fName := runtime.FuncForPC(pc).Name()
+	s := strings.Split(fName, "/")
+	// drop module path
+	return s[len(s)-1]
 }

@@ -92,3 +92,24 @@ func BenchmarkCatch(b *testing.B) {
 		}()
 	}
 }
+
+type Outer struct{}
+
+func TestResultOutput(t *testing.T) {
+	ret := new(Outer).Outer()
+	if !ret.IsOk() {
+		t.Log(ret.Err())
+		t.Fail()
+	}
+}
+
+func (o *Outer) Outer() (ret mo.Result[int]) {
+	defer mo.Catch(&ret)
+	val := divide(1, 0).Try()
+	return ret.WithOk(val)
+}
+
+func divide(a, b int) (ret mo.Result[int]) {
+	defer mo.Catch(&ret, a, b)
+	return ret.WithOk(a / b)
+}
