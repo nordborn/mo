@@ -1,6 +1,7 @@
 package mo
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
@@ -105,20 +106,26 @@ func (o *Option[T]) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (o *Option[T]) Scan(value any) error {
-	if value == nil {
+func (o *Option[T]) Scan(src any) error {
+	if src == nil {
 		*o = None[T]()
 		return nil
 	}
+	// for scanners
 	var t T
-	if scanner, ok := any(&t).(interface{ Scan(any) error }); ok {
-		if err := scanner.Scan(value); err != nil {
+	if s, ok := any(&t).(sql.Scanner); ok {
+		if err := s.Scan(src); err != nil {
 			return err
 		}
 		*o = Some(t)
 		return nil
 	}
-	return fmt.Errorf("%v not a sql.Scanner", o)
+	// for basic types
+	if v, ok := src.(T); ok {
+		*o = Some(v)
+		return nil
+	}
+	return fmt.Errorf("can't scan %v to %v", src, o)
 }
 
 func (o Option[T]) Value() (driver.Value, error) {
@@ -128,5 +135,5 @@ func (o Option[T]) Value() (driver.Value, error) {
 	if valuer, ok := any(o.val).(driver.Valuer); ok {
 		return valuer.Value()
 	}
-	return nil, fmt.Errorf("%v not a driver.Valuer", o)
+	return o.val, nil
 }

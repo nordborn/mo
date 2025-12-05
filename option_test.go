@@ -37,3 +37,19 @@ func TestOptionsJSON(t *testing.T) {
 		Age:  mo.None[int](),
 	}, "user3")
 }
+
+func TestOptionsSQL(t *testing.T) {
+	var opt mo.Option[int]
+	mo.TryErr(opt.Scan(3))
+	assert.Equal(t, opt, mo.Some(3))
+	mo.TryErr(opt.Scan(nil))
+	assert.Equal(t, opt, mo.None[int]())
+}
+
+func TestOptionsSQLStr(t *testing.T) {
+	var opt mo.Option[string]
+	mo.TryErr(opt.Scan("test"))
+	assert.Equal(t, opt, mo.Some("test"))
+	mo.TryErr(opt.Scan(nil))
+	assert.Equal(t, opt, mo.None[string]())
+}
