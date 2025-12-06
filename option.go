@@ -137,3 +137,10 @@ func (o Option[T]) Value() (driver.Value, error) {
 	}
 	return o.val, nil
 }
+
+func (o Option[T]) Ref() *T {
+	if !o.isSome {
+		return nil
+	}
+	return &o.val
+}
