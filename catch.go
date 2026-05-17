@@ -42,6 +42,34 @@ func Catch[T any](ret *Result[T], on ...any) {
 	}
 }
 
+// CatchToErr catches any panic and converts it into a plain error.
+// It adds the context about where (and how) the err occured.
+// Usually this approach is useful for interface implementations
+// if error return can't be replaced with Result,
+// in other cases prefer `Result` and `Catch`.
+//
+// Example:
+//
+//		 func someFunc(arg1, arg2) (err error) {
+//			defer mo.CatchToErr(&err)
+//		 	...
+//		    1 / 0
+//	     	...
+//			return
+//		 }
+func CatchToErr(ret *error, on ...any) {
+	if r := recover(); r != nil {
+		if err, ok := r.(error); ok {
+			// WrapSkip(6, err) points to the place where the panic occured
+			res := Err[struct{}](errow.WrapSkip(6, err)).On(getOuterFuncName(), "(", fmt.Sprint(on...), ")")
+			*ret = res.Err()
+			return
+		}
+		res := Err[struct{}](fmt.Errorf("catched panic: %v", r)).On(getOuterFuncName(), "(", fmt.Sprint(on...), ")")
+		*ret = res.Err()
+	}
+}
+
 // getOuterFuncName returns module.(receiver).func where Catch was deferred
 func getOuterFuncName() string {
 	pc, _, _, _ := runtime.Caller(4)

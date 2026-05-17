@@ -27,12 +27,12 @@ func TestCatchTry(t *testing.T) {
 	assert.Equal(t, false, res.IsOk())
 }
 
-func process() (ret mo.Result[int]) {
-	defer mo.Catch(&ret)
+func process() (res mo.Result[int]) {
+	defer mo.Catch(&res)
 
 	file := mo.ResultFrom(openFile()).Try("open file")
 	data := readFile(file).Try()
-	ret = parse(data)
+	res = parse(data)
 	return
 }
 
@@ -52,13 +52,13 @@ func parse(_ []byte) mo.Result[int] {
 type File struct{}
 
 func TestCatchErr(t *testing.T) {
-	ret := processErr()
-	fmt.Println(ret)
-	assert.Equal(t, false, ret.IsOk())
+	err := processErr(100)
+	fmt.Println(err)
+	assert.NotEqual(t, nil, err)
 }
 
-func processErr() (ret mo.Result[int]) {
-	defer mo.Catch(&ret, "processErr")
+func processErr(val int) (err error) {
+	defer mo.CatchToErr(&err, val, val)
 	mo.TryErr(retErr())
 	return
 }
@@ -103,13 +103,13 @@ func TestResultOutput(t *testing.T) {
 	}
 }
 
-func (o *Outer) Outer() (ret mo.Result[int]) {
-	defer mo.Catch(&ret)
+func (o *Outer) Outer() (res mo.Result[int]) {
+	defer mo.Catch(&res)
 	val := divide(1, 0).Try()
-	return ret.WithOk(val)
+	return res.WithOk(val)
 }
 
-func divide(a, b int) (ret mo.Result[int]) {
-	defer mo.Catch(&ret, a, b)
-	return ret.WithOk(a / b)
+func divide(a, b int) (res mo.Result[int]) {
+	defer mo.Catch(&res, a, b)
+	return res.WithOk(a / b)
 }
